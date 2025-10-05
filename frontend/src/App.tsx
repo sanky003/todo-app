@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { ApolloProvider, useQuery, useMutation } from '@apollo/client';
 import styled, { createGlobalStyle } from 'styled-components';
 import client from './apollo/client';
-import { GET_TODOS, CREATE_TODO } from './apollo/queries';
-import { CheckSquare, Plus } from 'lucide-react';
+import { GET_TODOS, CREATE_TODO, DELETE_TODO } from './apollo/queries';
+import { CheckSquare, Plus, Trash2 } from 'lucide-react';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -100,6 +100,13 @@ const TodoCard = styled.div`
   margin-bottom: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-left: 4px solid #3b82f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
+
+const TodoContent = styled.div`
+  flex: 1;
 `;
 
 const TodoTitle = styled.h3`
@@ -112,6 +119,38 @@ const TodoDescription = styled.p`
   margin: 0;
   color: #6b7280;
   font-size: 14px;
+`;
+
+const TodoActions = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-left: 12px;
+`;
+
+const DeleteButton = styled.button`
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+  
+  &:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
 `;
 
 const AddTodoForm = styled.form`
@@ -210,6 +249,38 @@ const Button = styled.button<{ disabled?: boolean }>`
   }
 `;
 
+const TodoItem = ({ todo }: { todo: any }) => {
+  const [deleteTodo, { loading }] = useMutation(DELETE_TODO, {
+    refetchQueries: [{ query: GET_TODOS }],
+  });
+
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this todo?')) {
+      try {
+        await deleteTodo({
+          variables: { id: todo.id },
+        });
+      } catch (error) {
+        console.error('Error deleting todo:', error);
+      }
+    }
+  };
+
+  return (
+    <TodoCard>
+      <TodoContent>
+        <TodoTitle>{todo.title}</TodoTitle>
+        <TodoDescription>{todo.description}</TodoDescription>
+      </TodoContent>
+      <TodoActions>
+        <DeleteButton onClick={handleDelete} disabled={loading}>
+          <Trash2 size={16} />
+        </DeleteButton>
+      </TodoActions>
+    </TodoCard>
+  );
+};
+
 const TodoList = () => {
   const { loading, error, data } = useQuery(GET_TODOS);
 
@@ -223,15 +294,14 @@ const TodoList = () => {
       <h3 style={{ color: 'white', marginBottom: '20px' }}>Your Todos ({todos.length})</h3>
       {todos.length === 0 ? (
         <TodoCard>
-          <TodoTitle>No todos yet</TodoTitle>
-          <TodoDescription>Create your first todo using the GraphQL API!</TodoDescription>
+          <TodoContent>
+            <TodoTitle>No todos yet</TodoTitle>
+            <TodoDescription>Create your first todo using the GraphQL API!</TodoDescription>
+          </TodoContent>
         </TodoCard>
       ) : (
         todos.map((todo: any) => (
-          <TodoCard key={todo.id}>
-            <TodoTitle>{todo.title}</TodoTitle>
-            <TodoDescription>{todo.description}</TodoDescription>
-          </TodoCard>
+          <TodoItem key={todo.id} todo={todo} />
         ))
       )}
     </div>
