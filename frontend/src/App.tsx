@@ -320,25 +320,7 @@ function App() {
         </Header>
         
         <MainContent>
-          <WelcomeCard>
-            <WelcomeTitle>🎉 Welcome to Your Todo App!</WelcomeTitle>
-            <WelcomeText>
-              Your full-stack todo application is ready! This project demonstrates:
-            </WelcomeText>
-            <div>
-              <StatusBadge>✅ Django Backend</StatusBadge>
-              <StatusBadge>✅ GraphQL API</StatusBadge>
-              <StatusBadge>✅ MongoDB Database</StatusBadge>
-              <StatusBadge>✅ React Frontend</StatusBadge>
-              <StatusBadge>✅ TypeScript</StatusBadge>
-              <StatusBadge>✅ Styled Components</StatusBadge>
-            </div>
-            <WelcomeText style={{ marginTop: '24px' }}>
-              <strong>Backend:</strong> Running on http://localhost:8000<br/>
-              <strong>GraphQL Playground:</strong> http://localhost:8000/graphql/<br/>
-              <strong>Frontend:</strong> http://localhost:3001
-            </WelcomeText>
-          </WelcomeCard>
+          
           
           <AddTodo />
           <TodoList />
