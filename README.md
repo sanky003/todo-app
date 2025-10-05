@@ -218,3 +218,5 @@ To extend this application, consider adding:
 - Unit and integration tests
 - Docker containerization
 - CI/CD pipeline
+- AI powered search on db to maybe notify you
+  
